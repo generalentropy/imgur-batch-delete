@@ -1,5 +1,6 @@
-import axios from "axios";
+// import axios from "axios";
 import { API_BASE } from "../config/constants.js";
+import { apiClient } from "./apiClient.js";
 
 /**
  * Récupère un access token via le refresh token
@@ -14,7 +15,7 @@ export async function getAccessToken() {
     grant_type: "refresh_token",
   });
 
-  const { data } = await axios.post(
+  const { data } = await apiClient.post(
     `${API_BASE}/oauth2/token`,
     params.toString(),
     { headers: { "Content-Type": "application/x-www-form-urlencoded" } }

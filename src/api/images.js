@@ -1,32 +1,29 @@
-import axios from "axios";
+// import axios from "axios";
 import ora from "ora";
 import { API_V3, delayMs, maxRetries } from "../config/constants.js";
 import { fetchPaginated } from "./fetch.js";
 import { sleep } from "../utils/sleep.js";
 import { doDelete } from "../config/cli.js";
+import { apiClient } from "./apiClient.js";
 
 /**
- * Récupère toutes les images d'un compte (séquentiel, pour éviter les problèmes de rate limit)
- * En dry-run (doDelete=false) on saute entièrement la boucle albums.
- * @param {Object} headers - En-têtes HTTP avec token d'authentification
- * @returns {Promise<Array>} Liste de toutes les images
+ * Récupère toutes les images d'un compte (séquentiel pour éviter les 429).
+ * Dry-run : on ne fait que compter.
  */
 export async function getAllImages(headers) {
-  const spinner = ora("Listing images...").start();
-  // en dry-run on récupère quand même les standalone pour le count, sans pause
+  const spinner = ora("Listing images…").start();
+
+  // standalone
   const standalone = await fetchPaginated("/account/me/images", headers);
 
   let inAlbums = [];
   if (doDelete) {
-    // en delete mode on collecte les images d'album, avec pause pour rate-limit
+    // albums
     const albums = await fetchPaginated("/account/me/albums", headers);
     for (const { id: albumId } of albums) {
-      const res = await axios.get(`${API_V3}/album/${albumId}/images`, {
-        headers,
-      });
+      const res = await apiClient.get(`/album/${albumId}/images`, { headers });
       const imgs = Array.isArray(res.data.data) ? res.data.data : [];
-      if (imgs.length) inAlbums.push(...imgs);
-      await sleep(delayMs);
+      inAlbums.push(...imgs);
     }
   }
 
@@ -59,37 +56,20 @@ export async function processImages(images, headers) {
     return stats;
   }
 
-  // DELETE MODE : on applique delayMs entre chaque delete
   for (const { id } of images) {
     const spinner = ora(`Deleting ${id}`).start();
-    let attempt = 0;
-
-    while (attempt <= maxRetries) {
-      try {
-        await axios.delete(`${API_V3}/image/${id}`, { headers });
-        spinner.succeed(`Deleted ${id}`);
-        stats.deleted++;
-        break;
-      } catch (e) {
-        const status = e.response?.status;
-        if (status === 429 && attempt < maxRetries) {
-          const retryAfter = e.response.headers["retry-after"]
-            ? parseInt(e.response.headers["retry-after"], 10) * 1000
-            : 5000;
-          spinner.warn(
-            ` Rate limit, retrying ${id} after ${retryAfter / 1000}s`
-          );
-          await sleep(retryAfter);
-          attempt++;
-          continue;
-        }
-        spinner.fail(` Failed delete ${id}`);
-        stats.failed++;
-        break;
-      }
+    try {
+      // on passe maxRetries au config pour l'interceptor
+      await apiClient.delete(`/image/${id}`, {
+        headers,
+        maxRetries: maxRetries,
+      });
+      spinner.succeed(`Deleted ${id}`);
+      stats.deleted++;
+    } catch (e) {
+      spinner.fail(`Failed delete ${id} (${e.response?.status || e.message})`);
+      stats.failed++;
     }
-
-    // pause globale pour respecter le rate limit
     await sleep(delayMs);
   }
 
