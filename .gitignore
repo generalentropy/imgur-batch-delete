@@ -1,0 +1,197 @@
+# ────────────────────────────────────────────────────────────────────────────
+# Système d’exploitation
+# ────────────────────────────────────────────────────────────────────────────
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+# ────────────────────────────────────────────────────────────────────────────
+# Éditeurs et IDE
+# ────────────────────────────────────────────────────────────────────────────
+
+# VSCode
+.vscode/
+*.code-workspace
+
+# IntelliJ (inclut WebStorm, PyCharm, etc.)
+.idea/
+*.iml
+out/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim swap files
+*.swp
+*~.vim
+.swo
+
+# Emacs
+*~
+\#*\#
+.\#*
+
+# ────────────────────────────────────────────────────────────────────────────
+# Langages et environnements courants
+# ────────────────────────────────────────────────────────────────────────────
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+dist/
+build/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+*.egg
+.env
+venv/
+env/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+*.class
+*.log
+target/
+build/
+
+# Go
+*.exe
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+vendor/
+
+# C/C++
+*.o
+*.obj
+*.so
+*.exe
+*.dll
+*.dSYM/
+build/
+
+# .NET
+*.dll
+*.exe
+*.pdb
+*.cache
+*.log
+bin/
+obj/
+out/
+
+# Ruby
+*.gem
+*.rbc
+.bundle/
+vendor/bundle/
+log/
+tmp/
+coverage/
+*.retry
+
+# PHP / Composer
+vendor/
+composer.lock
+.php_cs.cache
+
+# Rust
+/target/
+/**/*.rs.bk
+
+# Dart / Flutter
+**/build/
+.flutter-plugins
+.packages
+.pub/
+.dart_tool/
+
+# ────────────────────────────────────────────────────────────────────────────
+# Conteneurs & Déploiement
+# ────────────────────────────────────────────────────────────────────────────
+
+# Docker
+docker-compose.override.yml
+**/Dockerfile.*
+**/docker-compose.*.yml
+*.env  # fichiers d’environnement sensibles
+docker-compose.*.env
+
+# Kubernetes
+*.kubeconfig
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Ansible
+*.retry
+
+# ────────────────────────────────────────────────────────────────────────────
+# Fichiers de logs & données temporaires
+# ────────────────────────────────────────────────────────────────────────────
+
+*.log
+*.tmp
+*.cache
+*.bak
+*.swp
+npm-debug.log*
+yarn-error.log*
+
+# ────────────────────────────────────────────────────────────────────────────
+# Documentation générée
+# ────────────────────────────────────────────────────────────────────────────
+
+/docs/_build/
+/site/
+/public/
+
+# ────────────────────────────────────────────────────────────────────────────
+# Certificats SSL privés
+# ────────────────────────────────────────────────────────────────────────────
+
+*.crt
+*.key
+*.pem
+
+# ────────────────────────────────────────────────────────────────────────────
+# Fichiers volumineux / Artefacts TVC
+# (ajoutez ici vos patterns pour CI/CD, builds, etc.)
+# ────────────────────────────────────────────────────────────────────────────
+
+# /dist/
+# /release/
+# /artifacts/
