@@ -43,9 +43,9 @@ export async function getAllImages(headers) {
 export async function processImages(images, headers) {
   const stats = { found: images.length, simulated: 0, deleted: 0, failed: 0 };
   if (!doDelete) {
-    const spinner = ora(`Simulating delete of ${stats.found} images`).start();
+    const spinner = ora(` Simulating delete of ${stats.found} images`).start();
     stats.simulated = stats.found;
-    spinner.succeed(`Simulated delete ${stats.found} images`);
+    spinner.succeed(` Simulated delete ${stats.found} images`);
     return stats;
   }
 

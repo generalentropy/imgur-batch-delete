@@ -10,7 +10,11 @@ export const apiClient = axios.create({
 
 // Interceptor “retry up to maxRetries on 429”
 apiClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // console.log("✅ HTTP %s %s", response.status, response.config.url);
+    // console.log("→ data:", response.data);
+    return response;
+  },
   async (error) => {
     const { config, response } = error;
     const maxRetries = config.maxRetries ?? 3;
