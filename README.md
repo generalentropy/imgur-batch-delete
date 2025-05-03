@@ -38,7 +38,7 @@ Un script Node.js permettant de supprimer **en lot** les images de votre compte 
    IMGUR_REFRESH_TOKEN=""
    ```
 
-> **⚠️ Ne partagez jamais vos identifiants en clair !**
+> **⚠️ Ne partagez jamais vos identifiants en clair**
 
 ---
 
@@ -102,4 +102,4 @@ Si vous rencontrez des blocages, attendez quelques instants ou ajustez la variab
 
 ## 📄 Licence
 
-MIT © \[Votre Nom]
+MIT © Eddy Nicolle
