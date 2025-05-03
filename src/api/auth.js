@@ -22,7 +22,7 @@ export async function getAccessToken() {
   );
 
   if (!data.access_token) {
-    throw new Error(`Token invalide : ${JSON.stringify(data)}`);
+    throw new Error(` Token invalide : ${JSON.stringify(data)}`);
   }
   return data.access_token;
 }

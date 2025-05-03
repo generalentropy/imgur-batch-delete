@@ -27,7 +27,7 @@ async function main() {
     // 5) Affiche le bilan
     displaySummary(stats);
   } catch (err) {
-    ora().fail(`Fatal error: ${err.response?.data || err.message}`);
+    ora().fail(` Fatal error: ${err.response?.data || err.message}`);
     process.exit(1);
   }
 }

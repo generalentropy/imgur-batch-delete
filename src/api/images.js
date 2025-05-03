@@ -28,7 +28,7 @@ export async function getAllImages(headers) {
   }
 
   const images = [...standalone, ...inAlbums];
-  spinner.succeed(`Found ${images.length} images`);
+  spinner.succeed(` Found ${images.length} images`);
   return images;
 }
 
@@ -41,39 +41,46 @@ export async function getAllImages(headers) {
  * @returns {Promise<Object>} Statistiques des opérations
  */
 export async function processImages(images, headers) {
-  const stats = {
-    found: images.length,
-    simulated: 0,
-    deleted: 0,
-    failed: 0,
-  };
-
+  const stats = { found: images.length, simulated: 0, deleted: 0, failed: 0 };
   if (!doDelete) {
-    // DRY MODE : un seul spinner, aucun sleep
     const spinner = ora(`Simulating delete of ${stats.found} images`).start();
     stats.simulated = stats.found;
     spinner.succeed(`Simulated delete ${stats.found} images`);
     return stats;
   }
 
+  let consecutiveFails = 0;
+
   for (const { id } of images) {
     const spinner = ora(`Deleting ${id}`).start();
     try {
-      await apiClient.delete(`/image/${id}`, {
-        headers,
-        maxRetries,
-      });
+      await apiClient.delete(`/image/${id}`, { headers, maxRetries });
       spinner.succeed(`Deleted ${id}`);
       stats.deleted++;
+      consecutiveFails = 0; // reset on succès
     } catch (e) {
       const status = e.response?.status;
       if (status === 429) {
-        spinner.fail(` Rate limit hit deleting  ${id} (HTTP ${status})`);
+        spinner.fail(` Rate limit hit deleting ${id} - (HTTP ${status})`);
       } else {
         spinner.fail(` Failed delete ${id} (${status || e.message})`);
       }
       stats.failed++;
+      consecutiveFails++;
+
+      if (consecutiveFails >= 5) {
+        // Échec critique : on stoppe et on affiche les stats
+        spinner.fail(
+          ` Imgur API has limited us 5 times in a row. Stopping the script...`
+        );
+        // Nouveau spinner juste pour l’info
+        // ora().info(
+        //   ` Summary: ${stats.found} images found, ${stats.deleted} deleted, ${stats.failed} failed.`
+        // );
+        return stats;
+      }
     }
+
     await sleep(delayMs);
   }
 
