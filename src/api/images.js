@@ -59,15 +59,19 @@ export async function processImages(images, headers) {
   for (const { id } of images) {
     const spinner = ora(`Deleting ${id}`).start();
     try {
-      // on passe maxRetries au config pour l'interceptor
       await apiClient.delete(`/image/${id}`, {
         headers,
-        maxRetries: maxRetries,
+        maxRetries,
       });
       spinner.succeed(`Deleted ${id}`);
       stats.deleted++;
     } catch (e) {
-      spinner.fail(`Failed delete ${id} (${e.response?.status || e.message})`);
+      const status = e.response?.status;
+      if (status === 429) {
+        spinner.fail(` Rate limit hit deleting  ${id} (HTTP ${status})`);
+      } else {
+        spinner.fail(` Failed delete ${id} (${status || e.message})`);
+      }
       stats.failed++;
     }
     await sleep(delayMs);
