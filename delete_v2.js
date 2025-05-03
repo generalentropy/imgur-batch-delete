@@ -1,5 +1,7 @@
+// index.js
 import "dotenv/config";
 import axios from "axios";
+import ora from "ora"; // spinner
 
 const API_BASE = "https://api.imgur.com";
 const API_V3 = `${API_BASE}/3`;
@@ -78,6 +80,7 @@ async function fetchPaginated(path, headers) {
     const headers = { Authorization: `Bearer ${accessToken}` };
 
     // 2) Lister toutes les images (hors album + dans albums)
+    const spinnerList = ora("Listing images...").start();
     const standalone = await fetchPaginated("/account/me/images", headers);
     const albums = await fetchPaginated("/account/me/albums", headers);
 
@@ -90,23 +93,26 @@ async function fetchPaginated(path, headers) {
       if (imgs.length) inAlbums.push(...imgs);
       await sleep(delayMs);
     }
-
     const images = [...standalone, ...inAlbums];
+    spinnerList.succeed(`Found ${images.length} images`);
+
     const stats = { found: images.length, simulated: 0, deleted: 0, failed: 0 };
 
-    console.log(`\n🔍 Found ${stats.found} image(s) total.`);
-
-    // 3) Boucle de suppression ou simulation
+    // 3) Boucle de suppression ou simulation avec spinner par image
     for (const { id, link } of images) {
+      const action = doDelete ? "Deleting" : "Simulating";
+      const spinner = ora(`${action} ${id}`).start();
+
       if (!doDelete) {
-        console.log(`[SIMULATION] Would delete ${id} → ${link}`);
+        await sleep(200); // pause pour la visibilité du spinner
+        spinner.succeed(`Simulated delete ${id}`);
         stats.simulated++;
       } else {
         let attempt = 0;
         while (attempt <= maxRetries) {
           try {
             await axios.delete(`${API_V3}/image/${id}`, { headers });
-            console.log(`✔ Deleted ${id}`);
+            spinner.succeed(`Deleted ${id}`);
             stats.deleted++;
             break;
           } catch (e) {
@@ -115,20 +121,14 @@ async function fetchPaginated(path, headers) {
               const retryAfter = e.response.headers["retry-after"]
                 ? parseInt(e.response.headers["retry-after"], 10) * 1000
                 : 5000;
-              console.warn(
-                `⚠️ Rate limit hit for ${id}, retrying after ${
-                  retryAfter / 1000
-                }s... (` + `attempt ${attempt + 1}/${maxRetries})`
+              spinner.warn(
+                `Rate limit, retrying ${id} after ${retryAfter / 1000}s`
               );
               await sleep(retryAfter);
               attempt++;
               continue;
             }
-            console.error(
-              `✖ Failed to delete ${id}: ${
-                e.response?.data?.data?.error || e.message
-              }`
-            );
+            spinner.fail(`Failed delete ${id}`);
             stats.failed++;
             break;
           }
@@ -138,17 +138,15 @@ async function fetchPaginated(path, headers) {
     }
 
     // 4) Affiche le bilan
-    console.log("\n📊 Summary:");
-    console.log(` • Total images found   : ${stats.found}`);
-    if (doDelete) {
-      console.log(` • Successfully deleted : ${stats.deleted}`);
-      console.log(` • Failed deletions     : ${stats.failed}`);
-    } else {
-      console.log(` • Simulated deletions  : ${stats.simulated}`);
-      console.log(" • No actual deletions performed.");
-    }
+    ora().info(`
+📊 Summary:
+ • Total found   : ${stats.found}
+ • Deleted       : ${stats.deleted}
+ • Failed        : ${stats.failed}
+ • Simulated     : ${stats.simulated}
+    `);
   } catch (err) {
-    console.error("❗ Fatal error:", err.response?.data || err.message);
+    ora().fail(`Fatal error: ${err.response?.data || err.message}`);
     process.exit(1);
   }
 })();
