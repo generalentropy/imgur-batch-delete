@@ -139,7 +139,7 @@ async function fetchPaginated(path, headers) {
 
     // 4) Affiche le bilan
     ora().info(`
-📊 Summary:
+✨ Summary:
  • Total found   : ${stats.found}
  • Deleted       : ${stats.deleted}
  • Failed        : ${stats.failed}
