@@ -9,8 +9,8 @@ Un script Node.js permettant de supprimer de façon automatique les images de vo
 - Récupération automatique du `access_token` via votre `refresh_token`.
 - Listing paginé de toutes vos images (hors albums et dans albums).
 - Suppression en **batch** avec gestion du rate limit.
-- Mode **dry-run** (simulation) par défaut.
-- Mode **delete** (suppression réelle) activé via le flag `--delete`.
+- Mode **dry-run** (simulation)
+- Mode **delete** (suppression réelle).
 
 ---
 
@@ -76,12 +76,10 @@ npm install
 
 ### Mode simulation (dry-run)
 
-Affiche la liste des images qui seraient supprimées, **sans** effectuer de suppression :
+Affiche le nombre d'images qui seraient supprimées, **sans** effectuer de suppression :
 
 ```bash
-node delete_v2.js
-# ou explicitement
-node delete_v2.js --dry-run
+npm run dry
 ```
 
 ### Mode suppression (delete)
@@ -89,24 +87,15 @@ node delete_v2.js --dry-run
 Supprime réellement toutes les images listées :
 
 ```bash
-node delete_v2.js --delete
+npm run delete
 ```
-
----
-
-## ⚙️ Options
-
-| Option      | Description                       |
-| ----------- | --------------------------------- |
-| `--delete`  | Active le mode suppression réelle |
-| `--dry-run` | (Par défaut) Mode simulation      |
 
 ---
 
 ## 🛡️ Gestion du rate limit
 
 Le script intègre un **délai** entre chaque requête et un **exponential backoff** en cas de réponse `429 Rate Limit`.
-Si vous rencontrez des blocages, attendez quelques instants ou ajustez la variable `delayMs` dans le code.
+Si vous rencontrez des blocages, attendez quelques instants ou ajustez la variable `delayMs` dans le code _(config/constants.js_.
 
 ---
 
@@ -117,9 +106,3 @@ Si vous rencontrez des blocages, attendez quelques instants ou ajustez la variab
 3. Commitez vos changements (`git commit -m 'Ajoute une fonctionnalité'`)
 4. Push sur la branche (`git push origin feature/ma-feature`)
 5. Ouvrez une Pull Request
-
----
-
-## 📄 Licence
-
-MIT © Eddy Nicolle
