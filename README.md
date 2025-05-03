@@ -22,6 +22,26 @@ Un script Node.js permettant de supprimer **en lot** les images de votre compte 
 
 ---
 
+## 🔑 Comment récupérer vos clés Imgur API
+
+1. **Créer une application**
+
+   - Allez sur https://api.imgur.com/oauth2/addclient
+   - Choisissez « OAuth2 without callback » (ou avec callback si vous avez une URL)
+   - Notez le **Client ID** et le **Client Secret**.
+
+2. **Générer un refresh token**
+
+   - Ouvrez dans votre navigateur :
+
+     ```
+     https://api.imgur.com/oauth2/authorize?client_id=VOTRE_CLIENT_ID&response_type=token
+     ```
+
+     _ℹ️ remplacez VOTRE_CLIENT_ID par votre id_
+
+- Autorisez l’application et récupérez la valeur de `refresh_token` dans l’URL de redirection (dans le navigateur).
+
 ## 🔧 Configuration
 
 1. Dupliquez le fichier `.env.example` en `.env` à la racine du projet :
@@ -30,12 +50,12 @@ Un script Node.js permettant de supprimer **en lot** les images de votre compte 
    cp .env.example .env
    ```
 
-2. Ouvrez `.env` et renseignez vos clés :
+2. Ouvrez `.env` et ajoutez vos clés :
 
-   ```env
-   IMGUR_CLIENT_ID=""
-   IMGUR_CLIENT_SECRET=""
-   IMGUR_REFRESH_TOKEN=""
+   ```ini
+   IMGUR_CLIENT_ID="votre_client_id"
+   IMGUR_CLIENT_SECRET="votre_client_secret"
+   IMGUR_REFRESH_TOKEN="votre_refresh_token"
    ```
 
 > **⚠️ Ne partagez jamais vos identifiants en clair**
