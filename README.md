@@ -1,6 +1,6 @@
-# Imgur Bulk Deleter ⚙️🗑️
+# Imgur Batch Delete 🗑️
 
-Un script Node.js permettant de supprimer **en lot** les images de votre compte Imgur, qu'elles soient dans des albums ou non.
+Un script Node.js permettant de supprimer de façon automatique les images de votre compte Imgur, qu'elles soient dans des albums ou non.
 
 ---
 
