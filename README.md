@@ -7,7 +7,6 @@ Un script Node.js permettant de supprimer de façon automatique les images de vo
 ## 🚀 Fonctionnalités
 
 - Récupération automatique du `access_token` via votre `refresh_token`.
-- Listing paginé de toutes vos images (hors albums et dans albums).
 - Suppression en **batch** avec gestion du rate limit.
 - Mode **dry-run** (simulation)
 - Mode **delete** (suppression réelle).
