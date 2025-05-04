@@ -7,13 +7,15 @@ import chalk from "chalk";
  * @param {Object} stats - Statistiques des opérations
  */
 export function displaySummary(stats) {
+  const simulatedCount = stats.simulated ?? 0;
+
   const lines = [
     chalk.bold.blue(`     Summary   `),
 
     `     • Total found   : ${chalk.bold(stats.found)}`,
     `     • Deleted       : ${chalk.bold.green(stats.deleted)}`,
     `     • Failed        : ${chalk.bold.red(stats.failed)}`,
-    `     • Simulated     : ${chalk.bold.cyan(stats.simulated)}`,
+    `     • Simulated     : ${chalk.bold.cyan(simulatedCount)}`,
   ];
 
   const summary = lines.join("\n");

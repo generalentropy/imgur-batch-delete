@@ -1,35 +1,20 @@
-// import axios from "axios";
 import ora from "ora";
-import { API_V3, delayMs, maxRetries } from "../config/constants.js";
-import { fetchPaginated } from "./fetch.js";
+import { delayMs, maxRetries } from "../config/constants.js";
 import { sleep } from "../utils/sleep.js";
 import { doDelete } from "../config/cli.js";
 import { apiClient } from "./apiClient.js";
 
-/**
- * Récupère toutes les images d'un compte (séquentiel pour éviter les 429).
- * Dry-run : on ne fait que compter.
- */
-export async function getAllImages(headers) {
-  const spinner = ora("Listing images…").start();
+export async function getAllImages() {
+  // Renvoie toutes les images, albums ou non
+  const res = await apiClient.get("/account/me/images");
 
-  // standalone
-  const standalone = await fetchPaginated("/account/me/images", headers);
+  // 2) Déduplication
+  const unique = Array.from(
+    new Map(res.data.data.map((img) => [img.id, img])).values()
+  );
 
-  let inAlbums = [];
-  if (doDelete) {
-    // albums
-    const albums = await fetchPaginated("/account/me/albums", headers);
-    for (const { id: albumId } of albums) {
-      const res = await apiClient.get(`/album/${albumId}/images`, { headers });
-      const imgs = Array.isArray(res.data.data) ? res.data.data : [];
-      inAlbums.push(...imgs);
-    }
-  }
-
-  const images = [...standalone, ...inAlbums];
-  spinner.succeed(` Found ${images.length} images`);
-  return images;
+  // 3) On retour les ids
+  return unique.map((img) => img.id);
 }
 
 /**

@@ -1,35 +1,25 @@
-// src/config/apiClient.js
+// apiClient.js
 import axios from "axios";
-import { sleep } from "../utils/sleep.js";
-import { API_V3 } from "../config/constants.js";
+import { getAuthHeader } from "./auth.js";
+import axiosRetry from "axios-retry";
 
 export const apiClient = axios.create({
-  baseURL: API_V3,
-  timeout: 30_000,
+  baseURL: "https://api.imgur.com/3",
+  timeout: 10000,
 });
 
-// Interceptor “retry up to maxRetries on 429”
-apiClient.interceptors.response.use(
-  (response) => {
-    // console.log("✅ HTTP %s %s", response.status, response.config.url);
-    // console.log("→ data:", response.data);
-    return response;
-  },
-  async (error) => {
-    const { config, response } = error;
-    const maxRetries = config.maxRetries ?? 3;
-    config.__retryCount = config.__retryCount || 0;
+// Intercepteur pour ajouter l’Authorization
+apiClient.interceptors.request.use(async (config) => {
+  const header = await getAuthHeader();
+  config.headers = { ...config.headers, ...header };
+  return config;
+});
 
-    if (response?.status === 429 && config.__retryCount < maxRetries) {
-      const retryAfter =
-        parseInt(response.headers["retry-after"] || "5", 10) * 1000;
-      config.__retryCount++;
-      // stopAndPersist ici si vous voulez logger via ora
-      await sleep(retryAfter);
-      return apiClient.request(config);
-    }
-
-    // On a fait maxRetries ou ce n'est pas un 429 => on rejette
-    return Promise.reject(error);
-  }
-);
+// Retry automatique sur 5xx et réseau
+axiosRetry(apiClient, {
+  retries: 3,
+  retryDelay: axiosRetry.exponentialDelay,
+  retryCondition: (err) =>
+    axiosRetry.isNetworkOrIdempotentRequestError(err) ||
+    err.response?.status >= 500,
+});
