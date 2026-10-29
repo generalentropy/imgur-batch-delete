@@ -1,69 +1,69 @@
 # Imgur Batch Delete 🗑️
 
-Un script Node.js permettant de supprimer de façon automatique les images de votre compte Imgur, qu'elles soient dans des albums ou non.
+A Node.js script that automatically deletes the images from your Imgur account, whether they are in albums or not.
 
 ---
 
-## 🚀 Fonctionnalités
+## Features
 
-- Récupération automatique du `access_token` via votre `refresh_token`.
-- Suppression en **batch** avec gestion du rate limit.
-- Mode **dry-run** (simulation)
-- Mode **delete** (suppression réelle).
-
----
-
-## 📋 Prérequis
-
-- Node.js v16+ installé
-- Un compte Imgur et un **Client-ID/Client-Secret** obtenus via le [Dashboard Imgur](https://api.imgur.com/oauth2/addclient)
-- Un **Refresh Token** généré au moment de l’autorisation OAuth
+- Automatically fetches an `access_token` from your `refresh_token`.
+- **Batch** deletion with rate limit handling.
+- **Dry-run** mode (simulation).
+- **Delete** mode (actual deletion).
 
 ---
 
-## 🔑 Comment récupérer vos clés Imgur API
+## Requirements
 
-1. **Créer une application**
+- Node.js v22+
+- An Imgur account and a **Client ID / Client Secret** from the [Imgur dashboard](https://api.imgur.com/oauth2/addclient)
+- A **refresh token**, generated during OAuth authorization
 
-   - Allez sur https://api.imgur.com/oauth2/addclient
-   - Choisissez « OAuth2 without callback » (ou avec callback si vous avez une URL)
-   - Notez le **Client ID** et le **Client Secret**.
+---
 
-2. **Générer un refresh token**
+## Getting your Imgur API keys
 
-   - Ouvrez dans votre navigateur :
+1. **Create an application**
+
+   - Go to https://api.imgur.com/oauth2/addclient
+   - Choose "OAuth2 without callback" (or with a callback if you have a URL)
+   - Write down the **Client ID** and the **Client Secret**.
+
+2. **Generate a refresh token**
+
+   - Open this URL in your browser:
 
      ```
-     https://api.imgur.com/oauth2/authorize?client_id=VOTRE_CLIENT_ID&response_type=token
+     https://api.imgur.com/oauth2/authorize?client_id=YOUR_CLIENT_ID&response_type=token
      ```
 
-     _ℹ️ remplacez VOTRE_CLIENT_ID par votre id_
+     _Replace `YOUR_CLIENT_ID` with your own Client ID._
 
-- Autorisez l’application et récupérez la valeur de `refresh_token` dans l’URL de redirection (dans le navigateur).
+   - Authorize the application, then copy the `refresh_token` value from the redirect URL in your browser.
 
-## 🔧 Configuration
+## Configuration
 
-1. Dupliquez le fichier `.env.example` en `.env` à la racine du projet :
+1. Copy `.env.example` to `.env` at the root of the project:
 
    ```bash
    cp .env.example .env
    ```
 
-2. Ouvrez `.env` et ajoutez vos clés :
+2. Open `.env` and add your keys:
 
    ```ini
-   IMGUR_CLIENT_ID="votre_client_id"
-   IMGUR_CLIENT_SECRET="votre_client_secret"
-   IMGUR_REFRESH_TOKEN="votre_refresh_token"
+   IMGUR_CLIENT_ID="your_client_id"
+   IMGUR_CLIENT_SECRET="your_client_secret"
+   IMGUR_REFRESH_TOKEN="your_refresh_token"
    ```
 
-> **⚠️ Ne partagez jamais vos identifiants en clair**
+> **Warning:** never share your credentials in plain text.
 
 ---
 
-## 💾 Installation
+## Installation
 
-Installez toutes les dépendances listées dans `package.json` :
+Install the dependencies listed in `package.json`:
 
 ```bash
 npm install
@@ -71,19 +71,19 @@ npm install
 
 ---
 
-## ▶️ Usage
+## Usage
 
-### Mode simulation (dry-run)
+### Dry-run mode
 
-Affiche le nombre d'images qui seraient supprimées, **sans** effectuer de suppression :
+Shows how many images would be deleted, **without** deleting anything:
 
 ```bash
 npm run dry
 ```
 
-### Mode suppression (delete)
+### Delete mode
 
-Supprime réellement toutes les images listées :
+Actually deletes all the listed images:
 
 ```bash
 npm run delete
@@ -91,17 +91,17 @@ npm run delete
 
 ---
 
-## 🛡️ Gestion du rate limit
+## Rate limit handling
 
-Le script intègre un **délai** entre chaque requête et un **exponential backoff** en cas de réponse `429 Rate Limit`.
-Si vous rencontrez des blocages, attendez quelques instants ou ajustez la variable `delayMs` dans le code _(config/constants.js_.
+Deletions run with limited concurrency (3 requests at a time), and each failed request is retried with **exponential backoff** (up to 5 retries, from 1 s to 30 s), which covers `429 Rate Limit` responses.
+If you keep getting blocked, wait a moment, or lower the `concurrency` value in `src/api/deleteImages.js`.
 
 ---
 
-## 🤝 Contribuer
+## Contributing
 
-1. Forkez ce repo
-2. Créez une branche (`git checkout -b feature/ma-feature`)
-3. Commitez vos changements (`git commit -m 'Ajoute une fonctionnalité'`)
-4. Push sur la branche (`git push origin feature/ma-feature`)
-5. Ouvrez une Pull Request
+1. Fork this repo
+2. Create a branch (`git checkout -b feature/my-feature`)
+3. Commit your changes (`git commit -m 'Add a feature'`)
+4. Push the branch (`git push origin feature/my-feature`)
+5. Open a pull request

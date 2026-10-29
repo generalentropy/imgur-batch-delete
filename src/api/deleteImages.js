@@ -17,9 +17,9 @@ async function deleteOne(id) {
       factor: 2,
       minTimeout: 1000, // 1s
       maxTimeout: 30_000, // 30s
-      onFailedAttempt: (err) =>
+      onFailedAttempt: ({ error, attemptNumber }) =>
         console.warn(
-          ` Attempt ${err.attemptNumber} failed for ${id}: ${err.message}`
+          ` Attempt ${attemptNumber} failed for ${id}: ${error.message}`
         ),
     }
   );
