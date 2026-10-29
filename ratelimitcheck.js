@@ -3,7 +3,7 @@ import axios from "axios";
 
 // Vérification de la variable d'environnement
 if (!process.env.IMGUR_CLIENT_ID) {
-  console.error("❗ La variable d'env IMGUR_CLIENT_ID est manquante !");
+  console.error("❗ Missing environment variable: IMGUR_CLIENT_ID");
   process.exit(1);
 }
 
@@ -21,7 +21,7 @@ async function checkApiCredits() {
     console.log(`ClientRemaining: ${d.ClientRemaining}`);
   } catch (e) {
     console.error(
-      "❗ Échec de la requête de crédits API :",
+      "❗ API credits request failed:",
       e.response?.data || e.message
     );
     process.exit(1);
@@ -31,6 +31,6 @@ async function checkApiCredits() {
 (async () => {
   await checkApiCredits();
   console.log(
-    "\nℹ️  Note: l'endpoint OAuth d'Imgur (/oauth2/token) ne retourne pas d'en-têtes X-RateLimit pour l'instant."
+    "\nℹ️  Note: Imgur's OAuth endpoint (/oauth2/token) does not return X-RateLimit headers for now."
   );
 })();

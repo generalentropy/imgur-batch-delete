@@ -9,7 +9,7 @@ export function checkEnvironmentVariables() {
     "IMGUR_REFRESH_TOKEN",
   ]) {
     if (!process.env[name]) {
-      console.error(`❗ La variable d'env ${name} est manquante !`);
+      console.error(`❗ Missing environment variable: ${name}`);
       process.exit(1);
     }
   }
